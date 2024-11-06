@@ -1,17 +1,13 @@
-import { Link } from 'react-router-dom';
+import { Link, useRouteLoaderData, useSubmit } from 'react-router-dom';
 
 import classes from './MainNavigation.module.css';
-import { isLoggedIn, logout } from '../../ulties/firebase';
-import { useEffect, useState } from 'react';
 
 const MainNavigation = () => {
-  const isLogIn = isLoggedIn()
-  const [loginState, setLoginState] = useState(false)
-  useEffect(() => {
-    (async function () {
-      setLoginState(await isLogIn)
-    })()
-  }, [isLogIn])
+  const isLoggedIn = useRouteLoaderData('root')
+  const logoutSubmit = useSubmit()
+  function logout() {
+    logoutSubmit(null, { action: '/logout', method: 'post' })
+  }
   return (
     <header className={classes.header}>
       <Link to='/'>
@@ -19,14 +15,17 @@ const MainNavigation = () => {
       </Link>
       <nav>
         <ul>
-          <li>
-            <Link to='/auth?mode=login'>Login</Link>
-          </li>
+          {
+            !isLoggedIn &&
+            <li>
+              <Link to='/auth?mode=login'>Login</Link>
+            </li>
+          }
           <li>
             <Link to='/profile'>Profile</Link>
           </li>
           {
-            !loginState &&
+            isLoggedIn! &&
             <li>
               <button onClick={logout}>Logout</button>
             </li>

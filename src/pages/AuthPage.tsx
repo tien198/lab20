@@ -1,6 +1,6 @@
-import { ActionFunctionArgs, json } from 'react-router-dom';
+import { ActionFunctionArgs, json, redirect } from 'react-router-dom';
 import AuthForm from '../components/Auth/AuthForm';
-import { isLoggedIn, loginWithEmailPassword, registerWithEmailPassword } from '../ulties/firebase';
+import { loginWithEmailPassword, registerWithEmailPassword } from '../ulties/firebase';
 
 const AuthPage = () => {
   return <AuthForm />;
@@ -30,10 +30,6 @@ export async function action(args: ActionFunctionArgs) {
   catch (err) {
     return err
   }
-  isLoggedIn() && console.log('login ');
-  !isLoggedIn() && console.log('logout ');
 
-
-  return null
-
+  return redirect('/')
 }

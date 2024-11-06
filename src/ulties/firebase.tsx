@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app'
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth'
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, reauthenticateWithRedirect } from 'firebase/auth'
+import { json } from 'react-router-dom'
 
 const app = initializeApp({
     apiKey: "AIzaSyDczDBI1CkQi_aCQQAWnx51oSLWCgumKDM",
@@ -24,17 +25,20 @@ export async function registerWithEmailPassword(emailVal: string, passwordVal: s
     return useCredential.user
 }
 
-export function logout() {
-    signOut(auth)
+export async function logout() {
+    await signOut(auth)
 }
 
 export async function isLoggedIn() {
-    let isLoggedIn = false
-    await onAuthStateChanged(auth, user => {
-        if (user)
-            isLoggedIn = true
-        else
-            isLoggedIn = false
-    })
-    return isLoggedIn
+    let useCredential: any
+    await onAuthStateChanged(auth, user => useCredential = user)
+    return useCredential
+}
+
+export async function isAuthenLoader() {
+    const userCredential = await isLoggedIn()
+    if (!userCredential)
+        throw json({ message: 'You need to sign in to verify your permission!' }, { status: 401 })
+    else
+        return userCredential
 }
